@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Maroua</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@500;700&display=swap">
+<style>
+  /* Layout: one centered column, one screen at a time. Big italic serif carries the feeling; round buttons carry the action. */
+  :root {
+    --paper: #FFF4F2;
+    --paper-deep: #FFD6DB;
+    --ink: #3B1020;
+    --ink-soft: #7A3B4E;
+    --rose: #D81E3C;
+    --rose-deep: #A8132F;
+    --leaf: #2F7D3C;
+    --seed: #FFE8A3;
+    --display: "Instrument Serif", Georgia, "Times New Roman", serif;
+    --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+  html { height: 100%; }
+  body {
+    box-sizing: border-box;
+    min-height: 100%;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding-block: 28px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background-color: var(--paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg fill='%23D81E3C' fill-opacity='.13'%3E%3Cpath d='M12 10c3 3 3 8 0 11-3-3-3-8 0-11z'/%3E%3Cpath d='M48 46c3 3 3 8 0 11-3-3-3-8 0-11z'/%3E%3C/g%3E%3C/svg%3E"),
+      radial-gradient(120% 70% at 50% 100%, var(--paper-deep), transparent 70%);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .app { position: relative; z-index: 1; width: 100%; max-width: 34rem; }
+  .screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+    text-align: center;
+    animation: fade .6s ease both;
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.8rem, 12vw, 4.75rem);
+    line-height: 1;
+    text-wrap: balance;
+    outline: none;
+  }
+  h1 em { color: var(--rose); font-style: italic; }
+  .letter { display: flex; flex-direction: column; gap: 1rem; max-width: 30rem; }
+  .letter p {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(1.4rem, 5.6vw, 1.75rem);
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+  .hint { margin: 0; color: var(--ink-soft); font-size: .95rem; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .9rem; }
+  .btn {
+    min-height: 3rem;
+    padding: .8rem 1.75rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font: 700 1rem/1 var(--body);
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.yes { background: var(--rose); border-color: var(--rose); color: #fff; }
+  .btn.yes:hover { background: var(--rose-deep); border-color: var(--rose-deep); }
+  .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .slot { display: inline-block; }
+  #slip { z-index: 5; }
+  #slipNote { min-height: 1.5em; }
+  .berry { display: block; width: 3.25rem; height: 3.25rem; flex: none; }
+  .berry.small { display: inline-block; width: 1.1em; height: 1.1em; vertical-align: -.15em; }
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .letter p.moon {
+    font-style: italic;
+    font-size: clamp(1.6rem, 6.6vw, 2.1rem);
+    color: var(--rose-deep);
+  }
+  .floaters svg { display: block; width: var(--size); height: var(--size); }
+  .chat { align-items: stretch; text-align: left; }
+  .chat .berry { align-self: center; }
+  .thread { display: flex; flex-direction: column; gap: .6rem; }
+  .msg {
+    max-width: 88%;
+    padding: .65rem 1rem;
+    border-radius: 1.25rem;
+    animation: fade .35s ease both;
+    text-wrap: pretty;
+  }
+  .msg.him {
+    align-self: flex-start;
+    background: #fff;
+    border: 1.5px solid var(--paper-deep);
+    border-bottom-left-radius: .35rem;
+    font-family: var(--display);
+    font-size: clamp(1.3rem, 5.2vw, 1.6rem);
+    line-height: 1.25;
+  }
+  .msg.him em { color: var(--rose); }
+  .msg.big { font-size: clamp(2.3rem, 10.5vw, 3.5rem); line-height: 1; font-style: italic; padding-block: .8rem; }
+  .msg.moon { color: var(--rose-deep); font-style: italic; }
+  .msg.her {
+    align-self: flex-end;
+    background: var(--rose);
+    color: #fff;
+    border-bottom-right-radius: .35rem;
+    font-weight: 500;
+  }
+  .typing {
+    align-self: flex-start;
+    display: flex;
+    gap: .3rem;
+    padding: .95rem 1.1rem;
+    background: #fff;
+    border: 1.5px solid var(--paper-deep);
+    border-radius: 1.25rem;
+    border-bottom-left-radius: .35rem;
+  }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--rose); animation: blink 1s ease-in-out infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; }
+  .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes blink { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+  .chat .replies { justify-content: flex-end; }
+  .btn.reply { border-color: var(--rose); color: var(--rose-deep); padding: .65rem 1.2rem; }
+  .btn.reply:hover { background: var(--rose); border-color: var(--rose); color: #fff; }
+  .blessing {
+    margin: .5rem 0 0;
+    font-family: var(--display);
+    font-style: italic;
+    font-size: clamp(1.9rem, 8vw, 2.8rem);
+    line-height: 1.1;
+    color: var(--rose-deep);
+    text-wrap: balance;
+    animation: fade 1.4s ease 2.4s both;
+  }
+  .floaters { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .floaters span {
+    position: absolute;
+    top: 0;
+    left: var(--x);
+    font-family: var(--display);
+    font-style: italic;
+    font-size: var(--size);
+    line-height: 1;
+    color: var(--c);
+    opacity: var(--o);
+    white-space: nowrap;
+    animation: rise var(--dur) linear var(--delay) infinite;
+  }
+  @keyframes rise {
+    from { transform: translateY(108vh) rotate(var(--r)); }
+    to { transform: translateY(-18vh) rotate(calc(var(--r) * -1)); }
+  }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .screen, .blessing { animation: none; }
+    .floaters span { animation: none; transform: translateY(var(--y)) rotate(var(--r)); }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="berry" viewBox="0 0 64 64">
+    <path style="fill:var(--rose)" d="M32 60C17 54 7 39 9 27c1-9 9-13 15-11 3 1 5 1 8 0 3 1 5 1 8 0 6-2 14 2 15 11 2 12-8 27-23 33z"/>
+    <path style="fill:var(--leaf)" d="M32 22c-7-1-13-5-15-10 6 0 10 1 13 4 0-4 1-8 2-12 1 4 2 8 2 12 3-3 7-4 13-4-2 5-8 9-15 10z"/>
+    <g style="fill:var(--seed)">
+      <ellipse cx="22" cy="30" rx="1.6" ry="2.6"/><ellipse cx="32" cy="29" rx="1.6" ry="2.6"/><ellipse cx="42" cy="30" rx="1.6" ry="2.6"/>
+      <ellipse cx="17" cy="40" rx="1.6" ry="2.6"/><ellipse cx="27" cy="40" rx="1.6" ry="2.6"/><ellipse cx="37" cy="40" rx="1.6" ry="2.6"/><ellipse cx="47" cy="40" rx="1.6" ry="2.6"/>
+      <ellipse cx="22" cy="50" rx="1.6" ry="2.6"/><ellipse cx="32" cy="51" rx="1.6" ry="2.6"/><ellipse cx="42" cy="50" rx="1.6" ry="2.6"/>
+    </g>
+  </symbol>
+</svg>
+
+<main class="app">
+  <section class="screen chat" data-screen="letter">
+    <svg class="berry" aria-hidden="true"><use href="#berry"/></svg>
+    <div class="thread" id="thread" aria-live="polite"></div>
+    <div class="actions replies" id="replies"></div>
+  </section>
+
+  <section class="screen" data-screen="ask" hidden>
+    <h1 tabindex="-1">Will you be my <em>girlfriend?</em></h1>
+    <div class="actions">
+      <button class="btn yes" type="button" data-go="yay">Yes</button>
+      <button class="btn" type="button" data-go="really1">No</button>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="really1" hidden>
+    <h1 tabindex="-1">Really?</h1>
+    <p class="hint">Think about it.</p>
+    <div class="actions">
+      <button class="btn yes" type="button" data-go="really2">Yes, really</button>
+      <button class="btn" type="button" data-go="yay">No, not really</button>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="really2" hidden>
+    <h1 tabindex="-1">Really <em>really?</em></h1>
+    <p class="hint">Think a little more.</p>
+    <div class="actions">
+      <button class="btn yes" type="button" data-go="really3">Yes, really</button>
+      <button class="btn" type="button" data-go="yay">No, not really</button>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="really3" hidden>
+    <h1 tabindex="-1">Really really <em>really?</em></h1>
+    <p class="hint">Last chance.</p>
+    <div class="actions">
+      <span class="slot"><button class="btn yes" id="slip" type="button">Yes, really</button></span>
+      <button class="btn" id="noLast" type="button" data-go="yay">No, not really</button>
+    </div>
+    <p class="hint" id="slipNote" aria-live="polite"></p>
+  </section>
+
+  <section class="screen" data-screen="yay" hidden>
+    <h1 tabindex="-1">Congratu&shy;lations<em>!</em></h1>
+    <div class="letter">
+      <p>Maroua, you are officially my girlfriend <svg class="berry small" aria-hidden="true"><use href="#berry"/></svg></p>
+      <p>And I am officially your boyfriend.</p>
+    </div>
+    <p class="blessing">Lah yjiblna tisir alhbiba dyali</p>
+  </section>
+</main>
+
+<div class="floaters" id="floaters" aria-hidden="true" hidden></div>
+
+<script>
+(function () {
+  var screens = Array.prototype.slice.call(document.querySelectorAll('[data-screen]'));
+
+  function show(name) {
+    screens.forEach(function (s) { s.hidden = s.dataset.screen !== name; });
+    var cur = document.querySelector('[data-screen="' + name + '"]');
+    var h = cur && cur.querySelector('h1');
+    if (h) { try { h.focus({ preventScroll: true }); } catch (e) {} }
+    window.scrollTo(0, 0);
+    if (name === 'yay') celebrate();
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-go]');
+    if (b) show(b.dataset.go);
+  });
+
+  /* Opening conversation: Oubaid says a line, Maroua picks a reply. */
+  var script = [
+    { him: 'Hello <em>Maroua,</em>', big: true, replies: ['Hello Oubaid', 'What?'] },
+    { him: 'Did you know that you make me the happiest?', replies: ['Yes, I did', 'Oh really?'] },
+    { him: 'Well, you do, and I really like you.', replies: ['Oh really? I like you too', 'Stop it…'] },
+    { him: 'My life with you is heaven. I want to share my life with you.', replies: ['Aww', 'Really?'] },
+    { him: 'I love your eyes too, btw, and your laugh, btw.', replies: ['Thank you', "Stop, I'm blushing"] },
+    { him: "I wish you always laugh. I'll make sure you do.", replies: ['Promise?', "You'd better"] },
+    { him: "You're the moon that lights my life.", moon: true, replies: ['Continue'], last: true }
+  ];
+  var thread = document.getElementById('thread');
+  var replyBox = document.getElementById('replies');
+  var step = 0;
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function keepInView() {
+    try { replyBox.scrollIntoView({ block: 'nearest', behavior: calm ? 'auto' : 'smooth' }); } catch (e) {}
+  }
+
+  function showStep() {
+    var st = script[step];
+    var m = document.createElement('div');
+    m.className = 'msg him' + (st.big ? ' big' : '') + (st.moon ? ' moon' : '');
+    m.innerHTML = st.him;
+    thread.appendChild(m);
+    replyBox.innerHTML = '';
+    st.replies.forEach(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn reply';
+      b.textContent = t;
+      b.addEventListener('click', function () { pick(t); });
+      replyBox.appendChild(b);
+    });
+    keepInView();
+  }
+
+  function pick(text) {
+    if (script[step].last) { show('ask'); return; }
+    replyBox.innerHTML = '';
+    var her = document.createElement('div');
+    her.className = 'msg her';
+    her.textContent = text;
+    thread.appendChild(her);
+    var dots = document.createElement('div');
+    dots.className = 'typing';
+    dots.innerHTML = '<i></i><i></i><i></i>';
+    thread.appendChild(dots);
+    keepInView();
+    step++;
+    setTimeout(function () {
+      thread.removeChild(dots);
+      showStep();
+    }, 900);
+  }
+
+  showStep();
+
+  /* The last "Yes, really" button cannot be caught. */
+  var slip = document.getElementById('slip');
+  var slot = slip.parentNode;
+  var noBtn = document.getElementById('noLast');
+  var note = document.getElementById('slipNote');
+  var lines = ['Too slow.', 'Almost.', 'It does not want to be clicked.', 'Try the other one.'];
+  var moved = false;
+  var count = 0;
+
+  function overlaps(x, y, w, h, r) {
+    return x < r.right + 16 && x + w > r.left - 16 && y < r.bottom + 16 && y + h > r.top - 16;
+  }
+
+  function escapeButton() {
+    var r = slip.getBoundingClientRect();
+    if (!moved) {
+      slot.style.width = r.width + 'px';
+      slot.style.height = r.height + 'px';
+      slip.style.position = 'fixed';
+      slip.style.margin = '0';
+      slip.style.left = r.left + 'px';
+      slip.style.top = r.top + 'px';
+      void slip.offsetWidth;
+      slip.style.transition = 'left .25s ease, top .25s ease';
+      moved = true;
+    }
+    var pad = 16;
+    var vw = document.documentElement.clientWidth;
+    var vh = window.innerHeight;
+    var w = r.width, h = r.height;
+    var nr = noBtn.getBoundingClientRect();
+    var x = r.left, y = r.top, tries = 0, dx, dy;
+    do {
+      x = pad + Math.random() * Math.max(0, vw - w - 2 * pad);
+      y = pad + Math.random() * Math.max(0, vh - h - 2 * pad);
+      dx = x - r.left; dy = y - r.top;
+      tries++;
+    } while (tries < 50 && (Math.sqrt(dx * dx + dy * dy) < 140 || overlaps(x, y, w, h, nr)));
+    slip.style.left = x + 'px';
+    slip.style.top = y + 'px';
+    note.textContent = lines[count % lines.length];
+    count++;
+  }
+
+  ['pointerenter', 'pointerdown', 'focus', 'click'].forEach(function (ev) {
+    slip.addEventListener(ev, function (e) {
+      if (e.cancelable && ev !== 'focus') e.preventDefault();
+      escapeButton();
+    });
+  });
+
+  /* Celebration: boyfriend and girlfriend drifting up the whole page. */
+  var celebrated = false;
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function celebrate() {
+    if (celebrated) return;
+    celebrated = true;
+    var box = document.getElementById('floaters');
+    box.hidden = false;
+    for (var i = 0; i < 34; i++) {
+      var s = document.createElement('span');
+      if (i % 4 === 3) {
+        s.innerHTML = '<svg aria-hidden="true"><use href="#berry"/></svg>';
+      } else {
+        s.textContent = i % 2 ? 'girlfriend' : 'boyfriend';
+      }
+      s.style.setProperty('--x', rand(-4, 90).toFixed(1) + '%');
+      s.style.setProperty('--size', rand(16, 46).toFixed(0) + 'px');
+      s.style.setProperty('--dur', rand(10, 20).toFixed(1) + 's');
+      s.style.setProperty('--delay', '-' + rand(0, 20).toFixed(1) + 's');
+      s.style.setProperty('--r', rand(-14, 14).toFixed(1) + 'deg');
+      s.style.setProperty('--o', rand(0.16, 0.4).toFixed(2));
+      s.style.setProperty('--y', rand(0, 92).toFixed(0) + 'vh');
+      s.style.setProperty('--c', i % 3 === 0 ? 'var(--ink)' : 'var(--rose)');
+      box.appendChild(s);
+    }
+  }
+})();
+</script>
+</body>
+</html>
